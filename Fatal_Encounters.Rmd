@@ -17,7 +17,7 @@ library(RColorBrewer)
 
 ## R Markdown
 
-Throughout the past few decades we have seen several instances of police killing unarmed men and women through video captured by bystanders. There are several instances where the shootings/killings are justified, however there are many that are questionable at best. The image of George Floyd begging for his life has been engrained on many American minds. With the conviction of former police officer Derick Chauvin, many rejoiced that an officer was actually being held accountable. 
+Throughout the past few decades we have seen several instances of police killing unarmed men and women through video captured by bystanders. There are several instances where the shootings/killings are justified, however there are many that are questionable at best. The image of George Floyd begging for his life has been engrained on many American minds. With the conviction of former police officer Derick Chauvin, many rejoiced that an officer was actually being held accountable.
 
 In this visualization, I will be taking a look at a dataset consisting of fatal encounters with police officers. 
 
