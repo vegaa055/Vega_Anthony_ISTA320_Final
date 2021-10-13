@@ -1,0 +1,170 @@
+---
+title: "Fatal_Encounters"
+author: "Anthony Vega"
+date: "10/5/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(janitor)
+library(effects)
+library(usmap)
+library(RColorBrewer)
+```
+
+## R Markdown
+
+Throughout the past few decades we have seen several instances of police killing unarmed men and women through video captured by bystanders. There are several instances where the shootings/killings are justified, however there are many that are questionable at best. The image of George Floyd begging for his life has been engrained on many American minds. With the conviction of former police officer Derick Chauvin, many rejoiced that an officer was actually being held accountable. 
+
+In this visualization, I will be taking a look at a dataset consisting of fatal encounters with police officers. 
+
+
+```{r load_data}
+fatal_encounters <- read_csv("data/fatal_encounters.csv") %>% 
+  clean_names()
+
+# Select only the columns needed
+fatal_tidy <- fatal_encounters %>% 
+  select("state", "location_of_death_county", "date_of_injury_resulting_in_death_month_day_year", "age", "gender", "race", "highest_level_of_force", "intended_use_of_force_developing", "foreknowledge_of_mental_illness_internal_use_not_for_analysis", "armed_unarmed") 
+
+
+names(fatal_tidy)[names(fatal_tidy) == "date_of_injury_resulting_in_death_month_day_year"] <- "date"
+names(fatal_tidy)[names(fatal_tidy) == "foreknowledge_of_mental_illness_internal_use_not_for_analysis"] <- "mental_illness"
+
+fatal_tidy <- fatal_tidy %>% 
+  mutate(date = parse_date(date, "%m%.%d%.%Y"))
+
+
+# Get rid of any observations where race is unspecified 
+fatal_tidy_race <- fatal_tidy %>% 
+  filter(race != "Race unspecified")
+
+
+# Get rid of any observations where armed_unarmed is N/A, None or Duplicate of 13419?
+fatal_tidy_race_armed_unarmed <- fatal_tidy_race %>% 
+  filter(armed_unarmed != "N/A" & armed_unarmed != "None" & armed_unarmed != "Duplicate of 13419?") 
+
+
+# Get a count for the number of fatal encounters in each state
+fatal_encounters_by_state <- fatal_tidy_race_armed_unarmed %>% 
+  count(state) 
+
+# Combine with statepop 
+fatal_encounters_by_state <- statepop %>% 
+  left_join(fatal_encounters_by_state, by = c("abbr" = "state"))
+
+# bar plot for fatal encounters by race with armed_unarmed as the fill
+fatal_tidy_race_armed_unarmed %>% 
+  group_by(race, armed_unarmed) %>% 
+  ggplot(aes(y = race, fill = armed_unarmed)) + 
+  labs(title = "Fatal Encounters With Police by Race and Armed/Unarmed", x = "Count", y = "Race") +
+  scale_fill_discrete(name = "Armed/Unarmed") +
+  geom_bar() 
+  
+
+
+fatal_encounters_by_state %>% 
+  plot_usmap(data = .,
+             values = "n", labels = TRUE) +
+  theme(legend.position = "right") +
+  
+  scale_fill_continuous(name = "Fatal Encounters", low = "darkslategray1", high = "darkslategrey") +
+  ggtitle("Fatal Encounters With Police")
+
+
+
+cali_fatal_encounters_by_county <- fatal_tidy_race_armed_unarmed %>% 
+  filter(state == "CA") %>% 
+  count(location_of_death_county)
+
+
+
+cali_fatal_encounters <- fatal_tidy_race_armed_unarmed %>% 
+  filter(state == "CA")
+
+cali_counties <- countypov %>% 
+  filter(abbr == "CA")
+
+
+
+cali_counties <- cali_counties %>% 
+  mutate(county = sub(" County", "", county))
+
+cali_county_count <- fatal_encounters
+
+cali_fatal_encounters_by_county <- cali_counties %>% 
+  left_join(cali_fatal_encounters_by_county, by = c("county" = "location_of_death_county"))
+
+
+ # where age is NA 
+texas_fatal_encounters <- fatal_tidy_race_armed_unarmed %>% 
+  filter(state == "TX")
+
+texas_fatal_encounters_by_county <- fatal_tidy_race_armed_unarmed %>% 
+  filter(state == "TX") %>% 
+  count(location_of_death_county)
+
+
+texas_counties <- countypov %>% 
+  filter(abbr == "TX")
+
+
+# Remove " County" from county column in order to match with the values in order to match texas_fatal_encounters_by_county
+texas_counties <- texas_counties %>% 
+  mutate(county = sub(" County", "", county))
+
+texas_fatal_encounters_by_county <- texas_counties %>% 
+  left_join(texas_fatal_encounters_by_county, by = c("county" = "location_of_death_county"))
+
+
+# California map by county
+plot_usmap(data = cali_fatal_encounters_by_county, values = "n", include = c("CA"), labels = FALSE) +
+  labs(title = "California Fatal Encounters") +
+  scale_fill_continuous(name = "Fatal Encounters", low = "lightskyblue1", high = "royalblue4") +
+  theme(legend.position = "right") 
+
+# California map by county
+plot_usmap(data = cali_fatal_encounters_by_county, values = "pct_pov_2014", include = c("CA"), labels = FALSE) +
+  labs(title = "California Poverty") +
+  scale_fill_continuous(name = "Poverty Percentage", low = "lightskyblue1", high = "royalblue4") +
+  theme(legend.position = "right") 
+  
+# Texas map by county
+plot_usmap(data = texas_fatal_encounters_by_county, values = "n", include = c("TX"), labels = FALSE) +
+  labs(title = "Texas Fatal Encounters") +
+  scale_fill_continuous(name = "Fatal Encounters", low = "khaki1", high = "darkorange4") +
+  theme(legend.position = "right") 
+  
+
+# Remove future entry
+fatal_tidy = fatal_tidy[-30861,]
+
+fatal_encounters_by_year <- fatal_tidy %>% 
+  count(date)
+
+# Plot of fatal encounters over time by the date
+  fatal_encounters_by_year %>% 
+  ggplot(aes(x = date, y = n)) + geom_point(color = "#18C0AE") +
+  labs(title = "Fatal Encounters With Police Over Time", x = "Year", y = "Count") +
+  geom_smooth(formula = y ~ x, method = "lm") +
+  scale_x_date(date_breaks = "2 years", date_labels = "%Y")
+  
+
+
+# Count of fatal encounters by mental illness
+fatal_encounters_by_mental_illness <- fatal_tidy %>% 
+  count(mental_illness)
+
+fatal_encounters_by_mental_illness %>% 
+  ggplot(aes(x = mental_illness, y = n)) + 
+  labs(title = "Fatal Encounters by Mental Illness", x = "Mental Illnes", y = "Count") +
+  geom_bar(stat = 'identity', fill = "forestgreen") + 
+  geom_text(aes(label = n), vjust = -0.5, size = 3) 
+
+```
+
+
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
