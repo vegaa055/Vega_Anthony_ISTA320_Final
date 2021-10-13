@@ -107,7 +107,6 @@ fatal_encounters_by_mental_illness <- fatal_tidy %>%
 fatal_encounters_agressive_phys_movement <- fatal_tidy %>% 
   filter(aggressive_physical_movement != "NA" & armed_unarmed != "Duplicate of 13419?" & 
            armed_unarmed != "Duplicate of 13457?")
-<<<<<<< HEAD
 
 
 unarmed_no_aggressive_movement <- fatal_encounters_agressive_phys_movement %>% 
@@ -117,18 +116,6 @@ unarmed_no_aggressive_movement <- fatal_encounters_agressive_phys_movement %>%
 ```
 
 ```{r bar_plot1}
-
-=======
-
-
-unarmed_no_aggressive_movement <- fatal_encounters_agressive_phys_movement %>% 
-  filter(armed_unarmed == "Unarmed" & 
-           aggressive_physical_movement == "None")
-
-```
-
-```{r bar_plot1}
->>>>>>> cf272dfa54d6f0cf8ccb887f762761398f9cd43e
 # bar plot for fatal encounters by race with armed_unarmed as the fill
 fatal_tidy_race_armed_unarmed %>% 
   group_by(race, armed_unarmed) %>% 
@@ -142,10 +129,6 @@ fatal_tidy_race_armed_unarmed %>%
 A standard bar chart is used to visualize fatal encounters with police based on race and whether the victim was armed or unarmed. There are three categories that stand out: Hispanic/Latino, European-American/White, and African American. In each category, the majority of victims were armed. However, when looking at the data for African-American/Black, the difference between armed and unarmed is smaller. There are 1864 observations where the victim was armed against 1466 that were unarmed.  For European-American/White, there are 3746 victims who were armed and 1887 that were unarmed. Finally, looking at the data for Hispanic/Latino, there are 1252 victims who were armed and 782 that were unarmed. 
 
 ```{r plot_armed_unarmed_agressive_movement}
-<<<<<<< HEAD
-
-=======
->>>>>>> cf272dfa54d6f0cf8ccb887f762761398f9cd43e
 fatal_encounters_agressive_phys_movement %>% 
   ggplot(aes(y = aggressive_physical_movement, x = armed_unarmed)) + 
   labs(title = "Fatal Encounters", subtitle = "Aggressive Physical Movement and Armed/Unarmed", x = "Armed/Unarmed", y = "Aggressive Physical Movement") +
@@ -159,10 +142,6 @@ There are some observations that don’t seem to make sense. For example, there 
 
 
 ```{r count_armed_unarmed}
-<<<<<<< HEAD
-
-=======
->>>>>>> cf272dfa54d6f0cf8ccb887f762761398f9cd43e
 armed_unarmed_black_count <- fatal_tidy_race_armed_unarmed %>% 
   filter(race == "African-American/Black")  %>% 
   count(armed_unarmed)
@@ -180,10 +159,6 @@ armed_unarmed_hisp_count <- fatal_tidy_race_armed_unarmed %>%
 
 
 ```{r count_unarmed_no_agressive_movement}
-<<<<<<< HEAD
-
-=======
->>>>>>> cf272dfa54d6f0cf8ccb887f762761398f9cd43e
 unarmed_no_aggressive_movement <- unarmed_no_aggressive_movement %>% 
   count(race)
 
@@ -236,13 +211,6 @@ plot_usmap(data = texas_fatal_encounters_by_county, values = "pct_pov_2014", inc
 A usmap plot is used to get a better look at how the data is distributed across the United States. There are two states that clearly stand out—California and Texas. Florida has a higher rate than most states and appears to have the third highest amount of fatal encounters
 
 A closer look at California, broken up into counties reveals that a majority of the fatal encounters occurred in Los Angeles County. Then, a thought occurred that there may be a connection between fatal encounters and poverty. However, after looking at a similar map that was using countypov data instead of fatal encounter data doesn’t seem to show much correlation. 
-<<<<<<< HEAD
-
-When looking at a similar map of Texas, it is clear that a majority of fatal encounters also occur mainly in one county—Harris County which is where Houston is located. Once again there does not seem to be any major correlation between poverty and fatal encounters. 
-
-```{r over_time}
-=======
->>>>>>> cf272dfa54d6f0cf8ccb887f762761398f9cd43e
 
 When looking at a similar map of Texas, it is clear that a majority of fatal encounters also occur mainly in one county—Harris County which is where Houston is located. Once again there does not seem to be any major correlation between poverty and fatal encounters. 
 
@@ -255,15 +223,8 @@ fatal_encounters_by_year %>%
   scale_x_date(date_breaks = "2 years", date_labels = "%Y")
 
 ```
-<<<<<<< HEAD
 
 A scatterplot is used to visualize the amount of fatal encounters with police over time. This was done using a subset of data that contained the amount of fatal encounters for each year. In the plot there is a definite rise in the amount of fatal encounters since 2000. 
-
-```{r bar_mental_illness}
-=======
-
-A scatterplot is used to visualize the amount of fatal encounters with police over time. This was done using a subset of data that contained the amount of fatal encounters for each year. In the plot there is a definite rise in the amount of fatal encounters since 2000. 
->>>>>>> cf272dfa54d6f0cf8ccb887f762761398f9cd43e
 
 ```{r bar_mental_illness}
 fatal_encounters_by_mental_illness %>% 
@@ -275,11 +236,3 @@ fatal_encounters_by_mental_illness %>%
 ```
 
 An additional subset for the amount of fatal encounters by mental illness is created. There are five categories or answers: Drug or alcohol use (meaning the victim was under the influence at the time of the incident), no, yes, unknown, and N/A. Surprisingly, the majority of fatal encounters did not involve someone with mental illness with 21,017 fatal encounters. There is still a high number of those who did have a mental illness at 3,376 fatal encounters but it is nowhere near the amount of those who did not.
-<<<<<<< HEAD
-
-
-
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
-=======
->>>>>>> cf272dfa54d6f0cf8ccb887f762761398f9cd43e
